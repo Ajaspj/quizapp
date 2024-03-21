@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:quizapp/controller/homescreencontroller.dart';
+
 import 'package:quizapp/core/constants/colorconstants.dart';
+import 'package:quizapp/view/caregorypage/categorymodel.dart';
 import 'package:quizapp/view/result_screen/result_screen.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  const QuizScreen({
+    super.key,
+    required this.category,
+  });
+  final CategoryModel category;
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -14,6 +19,8 @@ class _QuizScreenState extends State<QuizScreen> {
   int currentQstnIndex = 0;
   int? selectedAnswerIndex;
   int rightanswercount = 0;
+  int wronganswercount = 0;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -32,8 +39,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     borderRadius: BorderRadius.circular(15),
                     color: ColorConstants.darkGrey),
                 child: Text(
-                  HomeScreenController
-                      .flutterQuestions[currentQstnIndex].question,
+                  widget.category.questions[currentQstnIndex].question,
                   style: TextStyle(
                       color: ColorConstants.primaryWhite, fontSize: 18),
                 ),
@@ -43,19 +49,19 @@ class _QuizScreenState extends State<QuizScreen> {
               ),
               Column(
                 children: List.generate(
-                    HomeScreenController
-                        .flutterQuestions[currentQstnIndex].optionsList.length,
+                    widget.category.questions[currentQstnIndex].optionsList
+                        .length,
                     (index) => InkWell(
                           onTap: () {
                             if (selectedAnswerIndex == null) {
                               selectedAnswerIndex = index;
                               if (selectedAnswerIndex ==
-                                  HomeScreenController
-                                      .flutterQuestions[currentQstnIndex]
+                                  widget.category.questions[currentQstnIndex]
                                       .correctAnswerIndex) {
                                 rightanswercount++;
+                              } else {
+                                wronganswercount;
                               }
-
                               setState(() {});
                             }
                           },
@@ -67,16 +73,18 @@ class _QuizScreenState extends State<QuizScreen> {
                               decoration: BoxDecoration(
                                   border: Border.all(
                                       color: (index ==
-                                                  HomeScreenController
-                                                      .flutterQuestions[
+                                                  widget
+                                                      .category
+                                                      .questions[
                                                           currentQstnIndex]
                                                       .correctAnswerIndex &&
                                               selectedAnswerIndex != null)
                                           ? Colors.green
                                           : selectedAnswerIndex == index
                                               ? (selectedAnswerIndex ==
-                                                      HomeScreenController
-                                                          .flutterQuestions[
+                                                      widget
+                                                          .category
+                                                          .questions[
                                                               currentQstnIndex]
                                                           .correctAnswerIndex
                                                   ? Colors.green
@@ -89,8 +97,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    HomeScreenController
-                                        .flutterQuestions[currentQstnIndex]
+                                    widget.category.questions[currentQstnIndex]
                                         .optionsList[index],
                                     style: TextStyle(
                                         color: ColorConstants.primaryWhite,
@@ -111,8 +118,7 @@ class _QuizScreenState extends State<QuizScreen> {
               ),
               InkWell(
                 onTap: () {
-                  if (currentQstnIndex <
-                      HomeScreenController.flutterQuestions.length - 1) {
+                  if (currentQstnIndex < widget.category.questions.length - 1) {
                     currentQstnIndex++;
                     selectedAnswerIndex = null;
                     setState(() {});
@@ -121,6 +127,9 @@ class _QuizScreenState extends State<QuizScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ResultScreen(
+                                wronganswercount: wronganswercount,
+                                totalanswercount:
+                                    widget.category.questions.length,
                                 rightanswercount: rightanswercount)));
                   }
                 },
@@ -133,7 +142,12 @@ class _QuizScreenState extends State<QuizScreen> {
                       color: ColorConstants.primaryBlue),
                   child: Center(
                     child: Text(
-                      "Next",
+                      textAlign: TextAlign.center,
+                      currentQstnIndex == widget.category.questions.length - 1
+                          ? "finish"
+                          : selectedAnswerIndex == null
+                              ? "skip"
+                              : "Next",
                       style: TextStyle(
                           color: ColorConstants.primaryWhite, fontSize: 18),
                     ),
@@ -149,15 +163,13 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Color buldcolor(int index) {
     if (index ==
-            HomeScreenController
-                .flutterQuestions[currentQstnIndex].correctAnswerIndex &&
+            widget.category.questions[currentQstnIndex].correctAnswerIndex &&
         selectedAnswerIndex != null) {
       //to show right anw if selected answer is not null
       return ColorConstants.primaryGreen;
     } else if (index == selectedAnswerIndex) {
       // /to show wheater the asw is right or wrong
-      if (selectedAnswerIndex ==
-          HomeScreenController.flutterQuestions[currentQstnIndex]) {
+      if (selectedAnswerIndex == widget.category.questions[currentQstnIndex]) {
         return ColorConstants.primaryGreen;
       } else {
         return Colors.red;
@@ -170,14 +182,12 @@ class _QuizScreenState extends State<QuizScreen> {
 
   IconData? buildIcons(int index) {
     if (index ==
-            HomeScreenController
-                .flutterQuestions[currentQstnIndex].correctAnswerIndex &&
+            widget.category.questions[currentQstnIndex].correctAnswerIndex &&
         selectedAnswerIndex != null) {
       return Icons.done;
     } else if (index == selectedAnswerIndex) {
       if (selectedAnswerIndex !=
-          HomeScreenController
-              .flutterQuestions[currentQstnIndex].correctAnswerIndex) {
+          widget.category.questions[currentQstnIndex].correctAnswerIndex) {
         return Icons.close;
       }
     } else {
