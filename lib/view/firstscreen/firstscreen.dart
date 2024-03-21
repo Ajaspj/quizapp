@@ -60,7 +60,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                       .correctAnswerIndex) {
                                 rightanswercount++;
                               } else {
-                                wronganswercount;
+                                wronganswercount++;
                               }
                               setState(() {});
                             }
@@ -127,6 +127,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ResultScreen(
+                                category: widget.category,
                                 wronganswercount: wronganswercount,
                                 totalanswercount:
                                     widget.category.questions.length,

@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:quizapp/controller/homescreencontroller.dart';
 import 'package:quizapp/core/constants/colorconstants.dart';
-import 'package:quizapp/view/caregorypage/categorypage.dart';
+import 'package:quizapp/view/caregorypage/categorymodel.dart';
+
+import 'package:quizapp/view/firstscreen/firstscreen.dart';
 
 class ResultScreen extends StatelessWidget {
   const ResultScreen(
       {super.key,
       required this.rightanswercount,
       required this.wronganswercount,
-      required this.totalanswercount});
+      required this.totalanswercount,
+      required this.category});
   final int rightanswercount;
   final int wronganswercount;
   final int totalanswercount;
+  final CategoryModel category;
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +44,15 @@ class ResultScreen extends StatelessWidget {
                   TextStyle(color: ColorConstants.primaryWhite, fontSize: 20),
             ),
             Text(
-              "wrong answer ${wronganswercount.round()}",
+              "wrong answer ${wronganswercount}",
               style:
                   TextStyle(color: ColorConstants.primaryWhite, fontSize: 20),
             ),
-            //  Text(
-            //   "skipped questions ${.round()}",
-            //   style:
-            //       TextStyle(color: ColorConstants.primaryWhite, fontSize: 20),
-            // ),
+            Text(
+              "skipped questions ${totalanswercount - wronganswercount - rightanswercount}",
+              style:
+                  TextStyle(color: ColorConstants.primaryWhite, fontSize: 20),
+            ),
             SizedBox(
               height: 20,
             ),
@@ -57,7 +61,9 @@ class ResultScreen extends StatelessWidget {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CategoryScreen(),
+                        builder: (context) => QuizScreen(
+                          category: category,
+                        ),
                       ));
                 },
                 child: Text("Restart"))
